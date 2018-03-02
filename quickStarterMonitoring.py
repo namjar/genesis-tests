@@ -158,8 +158,20 @@ def verifyAllDBResponses(responses):
         while j < len(res):
             if res[i] != res[j]:
                 print("*** ERROR: CountDBObjects: "+ str(args.dbName) + str(i+1) + " != " + str(args.dbName) + str(j+1))
-                print(res[i])
-                print(res[j])
+
+                # verification items of responses
+                k = 0
+                while k<len(tablesDict):
+                    key = str(tablesDict[k])
+                    key = key.replace("[","")
+                    key = key.replace("]", "")
+                    key = key.replace("'", "")
+                    if res[i][key] != res[j][key]:
+                        print("Not Equals: " + str(tablesDict[k]) +": " + str(res[i][key]) + " != " + str(res[j][key]))
+                    k = k + 1
+
+                #print(res[i])
+                #print(res[j])
             else:
                 if logAll == 1:
                     if i != j:
@@ -175,8 +187,12 @@ print("Start monitoring...")
 i = 0
 while i<timeout:
     res = getAllDBResponses(dbParams)
-    res[1]['languages'] = 500     # error response for test
+    '''
+    # error responses for test
+    res[1]['languages'] = 500     
+    res[1]['pages'] = 300
+    res[0]['menus'] = 300
+    '''
     verifyAllDBResponses(res)
-
     time.sleep(timeout)
 
