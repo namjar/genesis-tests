@@ -37,48 +37,91 @@ timeout = int(args.timeout)
 
 '''
 dbParams = {
-    "dbHost": "localhost",
-    'dbPort' : '5430',
-    'dbName' : 'genesis',
-    'login' : 'postgres',
-    'password' : 'postgres'
+	"dbHost": "localhost",
+	'dbPort' : '5430',
+	'dbName' : 'genesis',
+	'login' : 'postgres',
+	'password' : 'postgres'
 }
 '''
 
 
 def getCountDBObjects(dbParams):
-	connect = psycopg2.connect(host=dbParams['dbHost'],
+    connect = psycopg2.connect(host=dbParams['dbHost'],
                                port=dbParams['dbPort'],
                                dbname=dbParams['dbName'],
                                user=dbParams['login'],
                                password=dbParams['password'])
-	cursor = connect.cursor()
-	cursor.execute("select count(*) from INFORMATION_SCHEMA.TABLES WHERE table_schema='public'")
-	tables = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_contracts\"")
-	contracts = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_pages\"")
-	pages = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_menu\"")
-	menus = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_blocks\"")
-	blocks = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_parameters\"")
-	params = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"1_languages\"")
-	locals = cursor.fetchall()
 
-	result = {}
-	result["tables"] = tables[0][0]
-	result["contracts"] = contracts[0][0]
-	result["pages"] = pages[0][0]
-	result["menus"] = menus[0][0]
-	result["blocks"] = blocks[0][0]
-	result["params"] = params[0][0]
-	result["locals"] = locals[0][0]
+    cursor = connect.cursor()
 
+    result = {}
 
-	return result
+    cursor.execute("select count(*) from INFORMATION_SCHEMA.TABLES WHERE table_schema='public'")
+    countTables = cursor.fetchall()
+    result["countTables"] = countTables[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_blocks\"")
+    blocks = cursor.fetchall()
+    result["blocks"] = blocks[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_contracts\"")
+    contracts = cursor.fetchall()
+    result["contracts"] = contracts[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_history\"")
+    history = cursor.fetchall()
+    result["history"] = history[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_keys\"")
+    keys = cursor.fetchall()
+    result["keys"] = keys[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_languages\"")
+    languages = cursor.fetchall()
+    result["languages"] = languages[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_members\"")
+    members = cursor.fetchall()
+    result["members"] = members[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_menu\"")
+    menus = cursor.fetchall()
+    result["menus"] = menus[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_notifications\"")
+    notifications = cursor.fetchall()
+    result["notifications"] = notifications[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_pages\"")
+    pages = cursor.fetchall()
+    result["pages"] = pages[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_parameters\"")
+    parameters = cursor.fetchall()
+    result["parameters"] = parameters[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_roles_assign\"")
+    roles_assign = cursor.fetchall()
+    result["roles_assign"] = roles_assign[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_roles_list\"")
+    roles_list = cursor.fetchall()
+    result["roles_list"] = roles_list[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_sections\"")
+    sections = cursor.fetchall()
+    result["sections"] = sections[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_signatures\"")
+    signatures = cursor.fetchall()
+    result["signatures"] = signatures[0][0]
+
+    cursor.execute("SELECT count(*) FROM \"1_tables\"")
+    tables = cursor.fetchall()
+    result["tables"] = tables[0][0]
+
+    return result
 
 
 def getAllDBResponses(dbParams):
@@ -106,15 +149,16 @@ def verifyAllDBResponses(responses):
         j = i + 1
         while j < len(res):
             if res[i] != res[j]:
-                print("ERROR: CountDBObjects: "+"genesis" + str(i+1)+ " != genesis" + str(j+1))
+                print("*** ERROR: CountDBObjects: "+ str(args.dbName) + str(i+1) + " != " + str(args.dbName) + str(j+1))
                 print(res[i])
                 print(res[j])
             else:
                 if logAll == 1:
                     if i != j:
-                        print("OK: " + "genesis" + str(i+1)+ " = genesis" + str(j+1))
+                        print("OK: " + str(args.dbName) + str(i+1) + " = " + str(args.dbName)+ str(j+1))
             j = j + 1
         i = i + 1
+    print("----------------------------------------------------------------------------------------")
 
 
 
@@ -123,8 +167,8 @@ print("Start monitoring...")
 i = 0
 while i<timeout:
     res = getAllDBResponses(dbParams)
-    #res[1]['locals'] = 500     # error response for test
+    res[1]['languages'] = 500     # error response for test
     verifyAllDBResponses(res)
-    print("---------------------------------------------")
+
     time.sleep(timeout)
 
