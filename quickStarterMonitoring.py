@@ -35,16 +35,24 @@ logAll = int(args.logAll)
 nodesCount = int(args.nodesCount)
 timeout = int(args.timeout)
 
-'''
-dbParams = {
-	"dbHost": "localhost",
-	'dbPort' : '5430',
-	'dbName' : 'genesis',
-	'login' : 'postgres',
-	'password' : 'postgres'
+tablesDict = {          # for code on 162 string
+    0:['countTables'],
+    1:['blocks'],
+    2:['contracts'],
+    3:['history'],
+    4:['keys'],
+    5:['languages'],
+    6:['members'],
+    7:['menus'],
+    8:['notifications'],
+    9:['pages'],
+    10:['parameters'],
+    11:['roles_assign'],
+    12:['roles_list'],
+    13:['sections'],
+    14:['signatures'],
+    15:['tables']
 }
-'''
-
 
 def getCountDBObjects(dbParams):
     connect = psycopg2.connect(host=dbParams['dbHost'],
