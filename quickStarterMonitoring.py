@@ -1,6 +1,8 @@
+from datetime import datetime
 import time
 import psycopg2
 import argparse
+
 
 '''
 Examles for start
