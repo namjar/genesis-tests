@@ -159,41 +159,49 @@ def printAllDBResponses(responses):
         i = i + 1
 
 def verifyAllDBResponses(responses):
+    print("------------------------------------------------")
+    print(str(datetime.now()) + "\n")
     res = responses
     i = 0
     while i < len(res)-1:
         j = i + 1
         while j < len(res):
             if res[i] != res[j]:
-                print("*** ERROR: CountDBObjects: "+ str(args.dbName) + str(i+1) + " != " + str(args.dbName) + str(j+1))
+                for index in range(len(tablesList)):
+                    key = tablesList[index]
 
-                # verification items of responses
-                k = 0
-                while k<len(tablesDict):
-                    key = str(tablesDict[k])
-                    key = key.replace("[","")
-                    key = key.replace("]", "")
-                    key = key.replace("'", "")
-                    if res[i][key] != res[j][key]:
-                        print("Not Equals: " + str(tablesDict[k]) +": " + str(res[i][key]) + " != " + str(res[j][key]))
-                    k = k + 1
+                    if (res[i][key] != res[j][key]) & (key == "block_chain"):
+                        delta = abs(res[i][key] - res[j][key])
+                        if delta>5:
+                            print("ERROR: CountDBObjects: " + str(args.dbName) + str(i + 1) + " != " + str(args.dbName) + str(j + 1))
+                            print(" Not Equals: " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
+                        else:
+                            if logAll == 1:
+                                if i != j:
+                                    print("OK: " + str(args.dbName) + str(i + 1) + " = " + str(args.dbName) + str(j + 1))
+                                    print(" " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
 
-                #print(res[i])
-                #print(res[j])
+                    if (res[i][key] != res[j][key]) & (key != "block_chain"):
+                            print("ERROR: CountDBObjects: " + str(args.dbName) + str(i + 1) + " != " + str(args.dbName) + str(j + 1))
+                            print(" Not Equals: " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
+
             else:
                 if logAll == 1:
                     if i != j:
-                        print("OK: " + str(args.dbName) + str(i+1) + " = " + str(args.dbName)+ str(j+1))
+                        print("OK: " + str(args.dbName) + str(i + 1) + " = " + str(args.dbName) + str(j + 1))
+
+            #print("")
+            #print(res[i])
+            #print(res[j])
+
             j = j + 1
         i = i + 1
-    print("----------------------------------------------------------------------------------------")
-
 
 
 # Start script
 print("Start monitoring...")
-i = 0
-while i<timeout:
+print("Nodes count = " + str(nodesCount))
+while True:
     res = getAllDBResponses(dbParams)
     '''
     # error responses for test
