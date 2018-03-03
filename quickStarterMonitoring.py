@@ -182,8 +182,8 @@ def verifyAllDBResponses(responses):
                                     print(" " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
 
                     if (res[i][key] != res[j][key]) & (key != "block_chain"):
-                            print("ERROR: CountDBObjects: " + str(args.dbName) + str(i + 1) + " != " + str(args.dbName) + str(j + 1))
-                            print(" Not Equals: " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
+                        print("ERROR: CountDBObjects: " + str(args.dbName) + str(i + 1) + " != " + str(args.dbName) + str(j + 1))
+                        print(" Not Equals: " + str(tablesList[index]) + ": " + str(res[i][key]) + " != " + str(res[j][key]))
 
             else:
                 if logAll == 1:
