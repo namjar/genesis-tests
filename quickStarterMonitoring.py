@@ -46,73 +46,96 @@ def getCountDBObjects(dbParams):
                                user=dbParams['login'],
                                password=dbParams['password'])
 
-    cursor = connect.cursor()
+    global tablesList
+    tablesList.clear()
 
+    cursor = connect.cursor()
     result = {}
 
     cursor.execute("select count(*) from INFORMATION_SCHEMA.TABLES WHERE table_schema='public'")
     countTables = cursor.fetchall()
     result["countTables"] = countTables[0][0]
+    tablesList.append('countTables')
 
     cursor.execute("SELECT count(*) FROM \"1_blocks\"")
     blocks = cursor.fetchall()
     result["blocks"] = blocks[0][0]
+    tablesList.append('blocks')
 
     cursor.execute("SELECT count(*) FROM \"1_contracts\"")
     contracts = cursor.fetchall()
     result["contracts"] = contracts[0][0]
+    tablesList.append('contracts')
 
     cursor.execute("SELECT count(*) FROM \"1_history\"")
     history = cursor.fetchall()
     result["history"] = history[0][0]
+    tablesList.append('history')
 
     cursor.execute("SELECT count(*) FROM \"1_keys\"")
     keys = cursor.fetchall()
     result["keys"] = keys[0][0]
+    tablesList.append('keys')
 
     cursor.execute("SELECT count(*) FROM \"1_languages\"")
     languages = cursor.fetchall()
     result["languages"] = languages[0][0]
+    tablesList.append('languages')
 
     cursor.execute("SELECT count(*) FROM \"1_members\"")
     members = cursor.fetchall()
     result["members"] = members[0][0]
+    tablesList.append('members')
 
     cursor.execute("SELECT count(*) FROM \"1_menu\"")
     menus = cursor.fetchall()
     result["menus"] = menus[0][0]
+    tablesList.append('menus')
 
     cursor.execute("SELECT count(*) FROM \"1_notifications\"")
     notifications = cursor.fetchall()
     result["notifications"] = notifications[0][0]
+    tablesList.append('notifications')
 
     cursor.execute("SELECT count(*) FROM \"1_pages\"")
     pages = cursor.fetchall()
     result["pages"] = pages[0][0]
+    tablesList.append('pages')
 
     cursor.execute("SELECT count(*) FROM \"1_parameters\"")
     parameters = cursor.fetchall()
     result["parameters"] = parameters[0][0]
+    tablesList.append('parameters')
 
     cursor.execute("SELECT count(*) FROM \"1_roles_assign\"")
     roles_assign = cursor.fetchall()
     result["roles_assign"] = roles_assign[0][0]
+    tablesList.append('roles_assign')
 
     cursor.execute("SELECT count(*) FROM \"1_roles_list\"")
     roles_list = cursor.fetchall()
     result["roles_list"] = roles_list[0][0]
+    tablesList.append('roles_list')
 
     cursor.execute("SELECT count(*) FROM \"1_sections\"")
     sections = cursor.fetchall()
     result["sections"] = sections[0][0]
+    tablesList.append('sections')
 
     cursor.execute("SELECT count(*) FROM \"1_signatures\"")
     signatures = cursor.fetchall()
     result["signatures"] = signatures[0][0]
+    tablesList.append('signatures')
 
     cursor.execute("SELECT count(*) FROM \"1_tables\"")
     tables = cursor.fetchall()
     result["tables"] = tables[0][0]
+    tablesList.append('tables')
+
+    cursor.execute("SELECT count(*) FROM \"block_chain\"")
+    block_chain = cursor.fetchall()
+    result["block_chain"] = block_chain[0][0]
+    tablesList.append('block_chain')
 
     return result
 
