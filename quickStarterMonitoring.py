@@ -137,6 +137,69 @@ def getCountDBObjects(dbParams):
     result["block_chain"] = block_chain[0][0]
     tablesList.append('block_chain')
 
+    # confirmations - different from others
+
+    cursor.execute("SELECT count(*) FROM \"info_block\"")
+    info_block = cursor.fetchall()
+    result["info_block"] = info_block[0][0]
+    tablesList.append('info_block')
+
+    cursor.execute("SELECT count(*) FROM \"install\"")
+    install = cursor.fetchall()
+    result["install"] = install[0][0]
+    tablesList.append('install')
+
+    cursor.execute("SELECT count(*) FROM \"log_transactions\"")
+    log_transactions = cursor.fetchall()
+    result["log_transactions"] = log_transactions[0][0]
+    tablesList.append('log_transactions')
+
+    cursor.execute("SELECT count(*) FROM \"migration_history\"")
+    migration_history = cursor.fetchall()
+    result["migration_history"] = migration_history[0][0]
+    tablesList.append('migration_history')
+
+    cursor.execute("SELECT count(*) FROM \"my_node_keys\"")
+    my_node_keys = cursor.fetchall()
+    result["my_node_keys"] = my_node_keys[0][0]
+    tablesList.append('my_node_keys')
+
+    # queue_blocks  - different from others
+    # queue_tx - different from others
+
+    cursor.execute("SELECT count(*) FROM \"rollback_tx\"")
+    rollback_tx = cursor.fetchall()
+    result["rollback_tx"] = rollback_tx[0][0]
+    tablesList.append('rollback_tx')
+
+    cursor.execute("SELECT count(*) FROM \"stop_daemons\"")
+    stop_daemons = cursor.fetchall()
+    result["stop_daemons"] = stop_daemons[0][0]
+    tablesList.append('stop_daemons')
+
+    cursor.execute("SELECT count(*) FROM \"system_contracts\"")
+    system_contracts = cursor.fetchall()
+    result["system_contracts"] = system_contracts[0][0]
+    tablesList.append('system_contracts')
+
+    cursor.execute("SELECT count(*) FROM \"system_parameters\"")
+    system_parameters = cursor.fetchall()
+    result["system_parameters"] = system_parameters[0][0]
+    tablesList.append('system_parameters')
+
+    cursor.execute("SELECT count(*) FROM \"system_states\"")
+    system_states = cursor.fetchall()
+    result["system_states"] = system_states[0][0]
+    tablesList.append('system_states')
+
+    cursor.execute("SELECT count(*) FROM \"system_tables\"")
+    system_tables = cursor.fetchall()
+    result["system_tables"] = system_tables[0][0]
+    tablesList.append('system_tables')
+
+    # transactions - different from others
+    # transactions_status - different from others
+
     return result
 
 
