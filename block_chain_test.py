@@ -3,70 +3,61 @@ import utils
 import config
 import requests
 import time
-import argparse
-import sys
+import funcs
+from builtins import sum
 
 class BlockChainTestCase(unittest.TestCase):
 
-    def get_name_and_code(self):
-        name = utils.generate_random_name()
-        code = """contract %s {
-                       conditions {}
-                       action {}
-                    }""" % (name,)
-        return code,name
-    
-    def generate_code(self, name):
-        code = """contract %s {
-                       conditions {}
-                       action {
-                       var test string}
-                    }""" % (name,)
-        return code
-
-    def create_contract(self):
-        code,name = self.get_name_and_code()
-        data = {'Wallet': '', 'Value': code, 'Conditions': """ContractConditions(`MainCondition`)"""}
-        resp = utils.call_contract("NewContract", data, self.data["jvtToken"])
+    def create_contract(self, url, prKey):
+        code,name = utils.generate_name_and_code("")
+        data = {'Wallet': '', 'Value': code, 'Conditions': "ContractConditions(`MainCondition`)"}
+        resp = utils.call_contract(url, prKey, "NewContract", data, self.data1["jwtToken"])
         return name
     
     def test_block_chain(self):
-        db1 = args.dbName1
-        db2 = args.dbName2
-        login = args.dbUser
-        pas = args.dbPassword
-        host = args.dbHost
-
+        fullConfig = config.getNodeConfig()
+        config1 = fullConfig["1"]
+        config2 = fullConfig["2"]
+        db1 = config1["dbName"]
+        db2 = config2["dbName"]
+        login1 = config1["login"]
+        login2 = config2["login"]
+        pas1 = config1["pass"]
+        pas2 = config2["pass"]
+        host1 = config1["dbHost"]
+        host2 = config2["dbHost"]
         ts_count = 30
-        config.readMainConfig()
-        self.data = utils.login()
+        self.data1 = utils.login(config1["url"], config1['private_key'])
         i = 1
         while i < ts_count:
-            start = time.time()
-            contName = self.create_contract()
+            contName = self.create_contract(config1["url"], config1['private_key'])
             i = i + 1
-            sleep = int(args.sleep) - (time.time() - start)
-            if sleep < 0:
-                print("Request is too long")
-                exit(1)
-            time.sleep(sleep)
+            time.sleep(1)
         time.sleep(15)
-        self.assertTrue(utils.compare_node_positions(host, db1, login, pas), "Incorrect order of nodes in block_chain2")
-        self.assertTrue(utils.compare_node_positions(host, db2, login, pas), "Incorrect order of nodes in block_chain1")
-        self.assertEqual(utils.get_blockchain_hash(host, db1, login, pas), utils.get_blockchain_hash(host, db2, login, pas),"Different hash")
+        count_contracts1 = utils.getCountDBObjects(host1, db1, login1, pas1)["contracts"]
+        count_contracts2 = utils.getCountDBObjects(host2, db2, login2, pas2)["contracts"]
+        amounts1 = utils.getUserTokenAmounts(host1, db1, login1, pas1)
+        amounts2 = utils.getUserTokenAmounts(host2, db2, login2, pas2)
+        sumAmounts = sum(amount[0] for amount in amounts1)
+        maxBlockId1 = funcs.get_max_block_id(config1["url"],self.data1["jwtToken"])
+        self.data2 = utils.login(config2["url"], config1['private_key'])
+        maxBlockId2 = funcs.get_max_block_id(config2["url"],self.data1["jwtToken"])
+        maxBlock = max(maxBlockId2, maxBlockId1)
+        hash1 = utils.get_blockchain_hash(host1, db1, login1, pas1, maxBlock)
+        hash2 = utils.get_blockchain_hash(host2, db2, login2, pas2, maxBlock)
+        node_position = utils.compare_node_positions(host1, db1, login1, pas1, maxBlock)
+        dict1 = dict(count_contract = count_contracts1,
+                     amounts = amounts1, summ = sumAmounts,
+                     hash = hash1,
+                     node_pos = node_position)
+        dict2 = dict(count_contract = count_contracts2,
+                     amounts = amounts2,
+                     summ = 100000000000000000100000000,
+                     hash = hash2,
+                     node_pos = True)
+        self.assertDictEqual(dict1, dict2, "Test two_nodes is faild")
+
         
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-dbHost', default='localhost')
-    parser.add_argument('-dbPort', default='5432')
-    parser.add_argument('-dbUser', default='postgres')
-    parser.add_argument('-dbPassword', default='postgres')
-    parser.add_argument('-dbName1', default='apla')
-    parser.add_argument('-dbName2', default='apla2')
-    parser.add_argument('-sleep', default='1')
-
-    args = parser.parse_args()
-    del(sys.argv[1:])
-
     unittest.main()
     

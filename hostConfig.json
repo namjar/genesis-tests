@@ -1,22 +1,22 @@
 {
 	"1":
 	{
-		"url": "http://localhost:7079/api/v2",
-		"private_key": "401e30a9eec94d972fea1f5fb40dfe1fde28c9fedd52a863a4724128ceb76c07",
-		"dbHost": "localhost",
-		"dbName": "aplafront",
-		"login": "postgres",
-		"pass": "postgres",
-		"time_wait_tx_in_block": 5
+		"url": "http://release0.d.apla.io:7079/api/v2",
+"private_key": "44e56b464bbeef7a682ec999ebdb8878a77124d6e4076fa12974ff8c60043c05",
+		"dbHost": "release0.d.apla.io",
+		"dbName": "genesis",
+		"login": "genesis",
+		"pass": "genesis",
+		"time_wait_tx_in_block": 30
 	},
 	"2":
 	{
-		"url": "http://localhost:7079/api/v2",
-		"private_key": "401e30a9eec94d972fea1f5fb40dfe1fde28c9fedd52a863a4724128ceb76c07",
-		"dbHost": "localhost",
-		"dbName": "aplafront",
-		"login": "postgres",
-		"pass": "postgres",
-		"time_wait_tx_in_block": 5
+		"url": "http://release1.d.apla.io:7079/api/v2",
+"private_key": "6b68bb3797041754fd61e01e3b53421650e8ee832d8ed33cd2bf47a5d4a7105e",
+		"dbHost": "release1.d.apla.io",
+		"dbName": "genesis",
+		"login": "genesis",
+		"pass": "genesis",
+		"time_wait_tx_in_block": 30
 	}
 }

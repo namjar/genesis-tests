@@ -28,7 +28,7 @@ parser.add_argument('-tcpPort2', default='7081')
 parser.add_argument('-httpPort2', default='7018')
 parser.add_argument('-dbName2', default='apla2')
 
-parser.add_argument('-gapBetweenBlocks', default='10')
+parser.add_argument('-gapBetweenBlocks', default='2')
 
 args = parser.parse_args()
 
@@ -44,7 +44,6 @@ os.makedirs(workDir1)
 os.makedirs(workDir2)
 
 # Start first node
-utils.clear_db(args.dbHost, args.dbName1, args.dbUser, args.dbPassword)
 node1 = subprocess.Popen([
 	binary,
 	'-workDir='+workDir1,
@@ -61,10 +60,7 @@ node1 = subprocess.Popen([
 	'-generateFirstBlock=1',
 	'-firstBlockPath='+firstBlockPath
 ])
-if not utils.wait_db_ready(args.dbHost, args.dbName1, args.dbUser, args.dbPassword):
-	print("Error init db1")
-	node1.kill()
-	exit(1)
+time.sleep(15)
 
 # Init second node
 code = subprocess.call([
@@ -91,6 +87,8 @@ if code != 0:
 
 with open(os.path.join(workDir1, 'PrivateKey'), 'r') as f:
 	privKey1 = f.read()
+with open(os.path.join(workDir2, 'PrivateKey'), 'r') as f:
+	privKey2 = f.read()
 with open(os.path.join(workDir1, 'KeyID'), 'r') as f:
 	keyID1 = f.read()
 with open(os.path.join(workDir1, 'NodePublicKey'), 'r') as f:
@@ -155,7 +153,6 @@ if code != 0:
 time.sleep(20)
 
 # Start second node
-utils.clear_db(args.dbHost, args.dbName2, args.dbUser, args.dbPassword)
 node2 = subprocess.Popen([
 	binary,
 	'-workDir='+workDir2,
@@ -171,35 +168,17 @@ node2 = subprocess.Popen([
 	'-keyID='+keyID2
 ])
 
-if not utils.wait_db_ready(args.dbHost, args.dbName2, args.dbUser, args.dbPassword, data={"tables":32, "blocks":5}):
-	print("Error init db2")
-	node1.kill()
-	node2.kill()
-	exit(1)
+time.sleep(15)
 
 # Update config
-configPath = os.path.join(curDir, 'config.json')
+configPath = os.path.join(curDir, 'hostConfig.json')
 with open(configPath) as fconf:
 	lines = fconf.readlines()
-del lines[2]
-lines.insert(2, "\"private_key\": \""+privKey1+"\",\n")
+del lines[4]
+lines.insert(4, "\"private_key\": \""+privKey1+"\",\n")
+del lines[14]
+lines.insert(14, "\"private_key\": \""+privKey2+"\",\n")
 with open(configPath, 'w') as fconf:
 	fconf.write(''.join(lines))
 
-code = subprocess.call([
-	'python',
-	os.path.join(curDir, 'block_chain_test.py'),
-	'-dbHost='+args.dbHost,
-	'-dbUser='+args.dbUser,
-	'-dbPassword='+args.dbPassword,
-	'-dbName1='+args.dbName1,
-	'-dbName2='+args.dbName2,
-	'-sleep='+args.gapBetweenBlocks
-])
 
-node1.kill()
-node2.kill()
-
-if code != 0:
-	print("Error block chain test")
-	exit(1)

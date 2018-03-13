@@ -1,24 +1,25 @@
 import json
-
-
-config = {}
+import os
 
 
 def readMainConfig():
-	with open('config.json', 'r') as f:
+	path = os.path.join(os.getcwd(), "config.json")
+	with open(path, 'r') as f:
 		data = f.read()
-	global config
-	config = json.loads(data)
+	return json.loads(data)
 
-def getNodeConfig(nodeNum):
-    with open('hostConfig.json', 'r') as f:
-        data = f.read()
-    fullJ = json.loads(data)
-    global config
-    config = fullJ[nodeNum]
-    
-def getDBConfig():
-	with open('dBconfig.json', 'r') as f:
+
+def getNodeConfig():
+	path = os.path.join(os.getcwd(), "hostConfig.json")
+	with open(path, 'r') as f:
 		data = f.read()
-	global config
-	config = json.loads(data)
+	return json.loads(data)
+
+
+def readFixtures(type):
+	path = ""
+	if type == "contracts":
+		path = os.path.join(os.getcwd(), "fixtures", "contracts.json")
+	with open(path, 'r') as f:
+		data = f.read()
+	return json.loads(data)

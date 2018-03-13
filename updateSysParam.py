@@ -28,20 +28,23 @@ if __name__ == "__main__":
 	timeToken = resultLogin["refresh"]
 	jvtToken = 'Bearer ' + resultLogin["token"]
 
+	print(args.name)
+	print(args.value)
 	dataCont = {"Name": args.name, "Value" : args.value}
 	resPrepareCall = requests.post(baseUrl +'/prepare/UpdateSysParam', data=dataCont, headers={'Authorization': jvtToken})
 	jsPrepareCall = resPrepareCall.json()
 
 	respSignTestPCall = requests.post(baseUrl + '/signtest/', params={'forsign': jsPrepareCall['forsign'], 'private': args.privKey})
 	resultSignTestPCall = respSignTestPCall.json()
-
 	sign_resCall = {"time": jsPrepareCall['time'], "signature": resultSignTestPCall['signature']}
 	dataCont.update(sign_resCall)
 	respCall = requests.post(baseUrl + '/contract/UpdateSysParam', data=dataCont, headers={"Authorization": jvtToken})
 	resultCallContract = respCall.json()
-	time.sleep(10)
+	time.sleep(25)
 	statusCall = requests.get(baseUrl + '/txstatus/' + resultCallContract["hash"], headers={"Authorization": jvtToken})
 	statusCallJ = statusCall.json()
+	print(statusCallJ)
+	print(statusCallJ["blockid"])
 	if len(statusCallJ["blockid"]) > 0:
 		print("OK")
 	else:

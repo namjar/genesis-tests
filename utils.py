@@ -6,56 +6,60 @@ import string
 import psycopg2
 from collections import Counter
 
-def get_uid():
-	resp = requests.get(config.config["url"] + '/getuid')
+
+def get_uid(url):
+	resp = requests.get(url + '/getuid')
 	result = resp.json()
 	return result['token'], result['uid']
 
 
-def sign(forsign):
-	resp = requests.post(config.config["url"] + '/signtest/', params={'forsign': forsign, 'private': config.config['private_key']})
+def sign(forsign, url, prKey):
+	data = {'forsign': forsign, 'private': prKey}
+	resp = requests.post(url + "/signtest/", params=data)
 	result = resp.json()
 	return result['signature'], result['pubkey']
 
 
-def login():
-	token, uid = get_uid()
-	signature, pubkey = sign(uid)
+def login(url, prKey):
+	token, uid = get_uid(url)
+	signature, pubkey = sign(uid, url, prKey)
 	fullToken = 'Bearer ' + token
-	resp = requests.post(config.config["url"] +'/login', params={'pubkey': pubkey, 'signature': signature}, headers={'Authorization': fullToken})
-	print(resp)
+	data = {'pubkey': pubkey, 'signature': signature}
+	head = {'Authorization': fullToken}
+	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
-	address = res["address"]
-	timeToken = res["refresh"]
-	jvtToken = 'Bearer ' + res["token"]
-	return {"uid": uid, "timeToken": timeToken, "jvtToken": jvtToken, "pubkey": pubkey, "address": address}
+	result = {}
+	result["uid"] = uid
+	result["timeToken"] = res["refresh"]
+	result["jwtToken"] = 'Bearer ' + res["token"]
+	result["pubkey"] = pubkey
+	result["address"] = res["address"]
+	return result
 
 
-def prepare_tx(entity, jvtToken, data):
-	urlToCont = config.config["url"] +'/prepare/' + entity
-	resp = requests.post(urlToCont, data=data, headers={'Authorization': jvtToken})
+def prepare_tx(url, prKey, entity, jvtToken, data):
+	urlToCont = url + '/prepare/' + entity
+	heads = {'Authorization': jvtToken}
+	resp = requests.post(urlToCont, data=data, headers=heads)
 	result = resp.json()
 	forsign = result['forsign']
-	signature, _ = sign(forsign)
+	signature, _ = sign(forsign, url, prKey)
 	return {"time": result['time'], "signature": signature}
 
-def install(type, log_level, db_host, db_port, db_name, db_user, db_pass, generate_first_block, first_block_dir):
-	data = {'type': type, 'log_level': log_level, 'db_host': db_host, 'db_port': db_port, 'db_name': db_name, 'db_user': db_user, 'db_pass': db_pass, 'generate_first_block': generate_first_block, 'first_block_dir': first_block_dir}
-	res = requests.post(config.config['url'] + "/install", params=data)
-	return res.json()
 
-def call_contract(name, data, jvtToken):
-	sign_res = prepare_tx(name, jvtToken, data)
-	print(sign_res)
+def call_contract(url, prKey, name, data, jvtToken):
+	sign_res = prepare_tx(url, prKey, name, jvtToken, data)
 	data.update(sign_res)
-	resp = requests.post(config.config["url"] + '/contract/' + name, data=data, headers={"Authorization": jvtToken})
-	print(resp)
+	urlEnd = url + '/contract/' + name
+	resp = requests.post(urlEnd, data=data, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
-            
-def txstatus(hsh, jvtToken):
-	time.sleep(config.config["time_wait_tx_in_block"])
-	resp = requests.get(config.config["url"] + '/txstatus/'+ hsh, headers={'Authorization': jvtToken})
+
+
+def txstatus(url, sleepTime, hsh, jvtToken):
+	time.sleep(sleepTime)
+	urlEnd = url + '/txstatus/' + hsh
+	resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
 	return resp.json()
 
 
@@ -65,6 +69,17 @@ def generate_random_name():
 		sym = random.choice(string.ascii_lowercase)
 		name.append(sym)
 	return "".join(name)
+
+
+def generate_name_and_code(sourceCode):
+	name = "Cont_" + generate_random_name()
+	if sourceCode == "":
+		sCode = """{data { }	conditions {	}	action {	}	}"""
+	else:
+		sCode = sourceCode
+	code = "contract " + name + sCode
+	return code, name
+
 
 def compare_keys_cout(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
@@ -79,54 +94,50 @@ def compare_keys_cout(dbHost, dbName, login, password):
 			secondKey = key
 	if secondKey == "":
 		return False
-	else:	
+	else:
 		keysCounter = Counter(keys)
 		firstKeyCount = keysCounter[firstKey]
 		secondKeyCount = keysCounter[secondKey]
 		compare = firstKeyCount - secondKeyCount
-		if(compare > 1)|(compare < -1):
+		if(compare > 1) | (compare < -1):
 			return False
 		else:
-			return True 
-		
-def compare_node_positions(dbHost, dbName, login, password):
+			return True
+
+
+def compare_node_positions(dbHost, dbName, login, password, maxBlockId):
+	minBlock = maxBlockId - 11
+	request = "SELECT node_position FROM block_chain WHERE id>" + str(minBlock) + " AND id<" + str(maxBlockId)
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT node_position FROM block_chain ORDER BY id ASC LIMIT ((SELECT COUNT (*) FROM \"block_chain\") - 5)")
+	cursor.execute(request)
 	positions = cursor.fetchall()
-	print(positions)
-	firstKey = positions[1]
-	secondKey = ""
-	for position in positions:
-		i = 0
-		while i > 9:
-			if position[i] == position[i+1]:
-				return False
-				break
-			else:
-				i =+ 2
-	return True 
-	
-def get_blockchain_hash(dbHost, dbName, login, password):
-	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
-	cursor = connect.cursor()
-	cursor.execute("SELECT md5(array_agg(md5((t.*)::varchar))::varchar)  FROM (SELECT * FROM block_chain ORDER BY id LIMIT ((SELECT COUNT(*) FROM block_chain) - 5)) AS t")
-	hash = cursor.fetchall()
-	return hash
+	i = 0
+	while i < 9:
+		if positions[i][0] == positions[i+1][0]:
+			return False
+			print(positions)
+			break
+		else:
+			i = i + 2
+	return True
+
 
 def get_count_records_block_chain(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT count(*) FROM \"block_chain\"")
 	return cursor.fetchall()
-		
+
+
 def get_ten_items(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
 	cursor.execute("SELECT * FROM block_chain Order by id DESC LIMIT 10")
 	keys = cursor.fetchall()
 	print(keys)
-		
+
+
 def getCountDBObjects(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
@@ -138,42 +149,34 @@ def getCountDBObjects(dbHost, dbName, login, password):
 	pages = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_menu\"")
 	menus = cursor.fetchall()
-	cursor.execute("SELECT count(*) FROM \"block_chain\"")
+	cursor.execute("SELECT count(*) FROM \"1_blocks\"")
 	blocks = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_parameters\"")
 	params = cursor.fetchall()
 	cursor.execute("SELECT count(*) FROM \"1_languages\"")
 	locals = cursor.fetchall()
-	return {"tables": tables[0][0], "contracts": contracts[0][0], "pages": pages[0][0], "menus":menus[0][0], "blocks":blocks[0][0], "params": params[0][0], "locals": locals[0][0]}
+	result = {}
+	result["tables"] = tables[0][0]
+	result["contracts"] = contracts[0][0]
+	result["pages"] = pages[0][0]
+	result["menus"] = menus[0][0]
+	result["blocks"] = blocks[0][0]
+	result["params"] = params[0][0]
+	result["locals"] = locals[0][0]
+	return result
 
-def clear_db(dbHost, dbName, login, password):
+
+def getUserTokenAmounts(dbHost, dbName, login, password):
 	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
 	cursor = connect.cursor()
-	cursor.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-	rows = cursor.fetchall()
-	for row in rows:
-		cursor.execute('drop table "' + row[0] + '" cascade')
-	connect.commit()
-	cursor.close()
-	connect.close()
+	cursor.execute("select amount from \"1_keys\"")
+	amounts = cursor.fetchall()
+	return amounts
 
-def wait_db_ready(dbHost, dbName, login, password, data={"tables": 32}, timeout=30):
-	i = 0
-	while i < timeout:
-		i = i + 1
-		time.sleep(1)
-
-		try:
-			print("Check database, attempt", i)
-			result = getCountDBObjects(dbHost, dbName, login, password)
-			isValid = True
-			for key in data:
-				if data[key] > result[key]:
-					print("  Count", key, "expected:", data[key], "got:", result[key])
-					isValid = False
-			if isValid:
-				return True
-		except:
-			continue
-
-	return False
+def get_blockchain_hash(dbHost, dbName, login, password, maxBlockId):
+	connect = psycopg2.connect(host=dbHost, dbname=dbName, user=login, password=password)
+	cursor = connect.cursor()
+	request = "SELECT md5(array_agg(md5((t.id, t.hash, t.data, t.ecosystem_id, t.key_id, t.node_position, t.time, t.tx)::varchar))::varchar)  FROM (SELECT * FROM block_chain WHERE id <= " + str(maxBlockId) + " ORDER BY id) AS t"
+	cursor.execute(request)
+	hash = cursor.fetchall()
+	return hash
