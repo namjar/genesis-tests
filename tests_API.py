@@ -1249,7 +1249,10 @@ class ApiTestCase(unittest.TestCase):
         data = {}
         #self.check_post_api("/vde/create", data, asserts)
         
-        
+    def test_notification(self):
+        asserts = ["result"]
+        data = {"ids":"[ {\"id\": \"-8709204252663234371\", \"ecosystem\": \"1\"}]"}    
+        self.check_post_api("/updnotificator/", data, asserts) 
 
 if __name__ == '__main__':
     unittest.main()
