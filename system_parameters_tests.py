@@ -610,12 +610,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -650,12 +649,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -690,12 +688,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -730,12 +727,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -770,12 +766,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -810,12 +805,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -851,11 +845,11 @@ class SystemParametersCase(unittest.TestCase):
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
         msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -891,11 +885,11 @@ class SystemParametersCase(unittest.TestCase):
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
         msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -975,12 +969,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1015,12 +1008,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1055,12 +1047,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1095,12 +1086,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1135,12 +1125,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1175,12 +1164,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1215,12 +1203,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1255,12 +1242,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1295,12 +1281,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1335,12 +1320,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1375,12 +1359,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1415,12 +1398,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1455,12 +1437,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1495,12 +1476,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1535,12 +1515,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1575,12 +1554,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
@@ -1615,12 +1593,11 @@ class SystemParametersCase(unittest.TestCase):
         count_res7 = int(self.getCountBlocks())
         res8 = int(self.call(contractName, data8))
         count_res8 = int(self.getCountBlocks())
-        msg = "Invalid value"
-        mustBe = dict(res1=msg,
-                      res2=msg,
-                      res3=msg,
-                      res4=msg,
-                      res5=msg,
+        mustBe = dict(res1="Value must be greater than zero",
+                      res2="9223372036854775808 is not a valid integer : value out of range",
+                      res3="hello is not a valid integer : invalid syntax",
+                      res4="1452.78 is not a valid integer : invalid syntax",
+                      res5="Value must be greater than zero",
                       res6=count_res6,
                       res7=count_res7,
                       res8=count_res8)
