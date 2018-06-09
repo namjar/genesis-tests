@@ -148,6 +148,19 @@ class SystemParametersCase(unittest.TestCase):
                       res7=res7)
         self.assertDictEqual(mustBe, actual, name+" has problem!")
 
+    def test_full_nodes0(self):
+        name = "full_nodes"
+        val = """[{"tcp_address": "127.0.0.1:7078", "api_address": "http://127.0.0.1:7079", "key_id": "3531010600944105480", "public_key": "c6054b5fce038c9bf04783c240a19d45d748a1b8ba5b9efee61c5b47437a6f05f620fa67c5070619e09c1513d977eb15e978512cc1b053320b56df3ee2e02684"}]"""
+        v1 = "{\"tcp_address\": \"127.0.0.1:7078\", \"api_address\": \"http://127.0.0.1:7079\", \"key_id\": \"3531010600944105480\", \"public_key\": \"c6054b5fce038c9bf04783c240a19d45d748a1b8ba5b9efee61c5b47437a6f05f620fa67c5070619e09c1513d977eb15e978512cc1b053320b56df3ee2e02684\"},"
+        v2 = "{\"tcp_address\": \"127.0.0.1:7078\", \"api_address\": \"http://127.0.0.1:7079\", \"key_id\": \"3531010600944105480\", \"public_key\": \"c6054b5fce038c9bf04783c240a19d45d748a1b8ba5b9efee61c5b47437a6f05f620fa67c5070619e09c1513d977eb15e978512cc1b053320b56df3ee2e02684\"},"
+        v3 = "{\"tcp_address\": \"127.0.0.1:7078\", \"api_address\": \"http://127.0.0.1:7079\", \"key_id\": \"3531010600944105480\", \"public_key\": \"c6054b5fce038c9bf04783c240a19d45d748a1b8ba5b9efee61c5b47437a6f05f620fa67c5070619e09c1513d977eb15e978512cc1b053320b56df3ee2e02684\"}"
+        #val = "[" + v1 + v2 + v3 + "]"
+        data1 = {"Name": name, "Value": val}
+        res1 = self.call(contractName, data1)
+        mustBe = dict(res1=True)
+        actual = dict(res1=int(res1) > 0)
+        self.assertDictEqual(mustBe, actual, name + " has problem!")
+
     def test_full_nodes1(self):
         name = "full_nodes"
         data1 = {"Name": name, "Value": -1}
@@ -186,13 +199,13 @@ class SystemParametersCase(unittest.TestCase):
         res16 = self.call(contractName, data16)
         res17 = self.call(contractName, data17)
         res18 = self.call(contractName, data18)
-        msg = "Invalid value"
+        msg = "runtime panic error"
         mustBe = dict(res1=msg,
                       res2=msg,
                       res3=msg,
-                      res4=msg,
+                      res4="invalid character 'h' looking for beginning of value",
                       res5=msg,
-                      res6=msg,
+                      res6="Wrong array structure",
                       res7=msg,
                       res8=msg,
                       res9=msg,
@@ -201,7 +214,7 @@ class SystemParametersCase(unittest.TestCase):
                       res12=msg,
                       res13=msg,
                       res14=msg,
-                      res15=msg,
+                      res15="invalid character 'h' looking for beginning of value",
                       res16=msg,
                       res17=msg,
                       res18=msg)
