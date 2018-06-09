@@ -27,6 +27,7 @@ class SystemParametersCase(unittest.TestCase):
         minInt = -9223372036854775808
         defaultValueKey = "system_parameters"
         defaultValues = self.readDefaultParameters()
+        self.maxDiff = None
 
     def readDefaultParameters(self):
         path = os.path.join(os.getcwd(), "defaultSystemParameters.json")
