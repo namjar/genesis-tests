@@ -50,9 +50,19 @@ class ApiTestCase(unittest.TestCase):
         return error, message
 
     def call(self, name, data):
-        resp = utils.call_contract(url, prKey, name, data, token)
-        resp = self.assertTxInBlock(resp, token)
+        multiData = [{"contract": name, "params": data}]
+        resp = utils.call_multi_contract(url, prKey, name, multiData, token)
+        resp = self.assertMultiTxInBlock(resp, token)
         return resp
+
+    def assertMultiTxInBlock(self, result, jwtToken):
+        self.assertIn("hashes", result)
+        hashes = result['hashes']
+        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        for status in result.values():
+            self.assertNotIn('errmsg', status)
+            self.assertGreater(int(status['blockid']), 0, "BlockID not generated")
+            return status['blockid']
 
     def test_balance(self):
         asserts = ["amount", "money"]
@@ -201,14 +211,14 @@ class ApiTestCase(unittest.TestCase):
 
     def test_content_lang(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        data = {"ApplicationId": "1", "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
-        dataPage = {"ApplicationId": 1, "Name": namePage, "Value": valuePage, "Conditions": "true",
+        dataPage = {"ApplicationId": "1", "Name": namePage, "Value": valuePage, "Conditions": "true",
                     "Menu": "default_menu"}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -237,7 +247,7 @@ class ApiTestCase(unittest.TestCase):
         
     def test_content_lang_after_edit(self):
         nameLang = "Lang_" + utils.generate_random_name()
-        data = {"ApplicationId": 1, "Name": nameLang,
+        data = {"ApplicationId": "1", "Name": nameLang,
                 "Trans": "{\"en\": \"World_en\", \"ru\" : \"Мир_ru\"," +\
                 "\"fr-FR\": \"Monde_fr-FR\", \"de\": \"Welt_de\"}"}
         res = self.call("NewLang", data)
@@ -245,11 +255,11 @@ class ApiTestCase(unittest.TestCase):
         namePage = "Page_" + utils.generate_random_name()
         valuePage = "Hello, LangRes(" + nameLang + ")"
         dataPage = {"Name": namePage, "Value": valuePage, "Conditions": "true",
-                    "Menu": "default_menu", "ApplicationId": 1,}
+                    "Menu": "default_menu", "ApplicationId": "1",}
         res = self.call("NewPage", dataPage)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         count = self.check_get_api("/list/languages", "", [])["count"]
-        dataEdit = {"Id": count, "AppID": 1, "Name": nameLang,
+        dataEdit = {"Id": count, "AppID": "1", "Name": nameLang,
                 "Trans": "{\"en\": \"World_en_ed\", \"ru\" : \"Мир_ru_ed\"," +\
                 "\"fr-FR\": \"Monde_fr-FR_ed\", \"de\": \"Welt_de_ed\"}"}
         res = self.call("EditLang", dataEdit)
@@ -317,7 +327,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "SetVar(a,\"Hello\") \n Div(Body: #a#)"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
-        data["ApplicationId"] = 1
+        data["ApplicationId"] = "1"
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Test
@@ -340,7 +350,7 @@ class ApiTestCase(unittest.TestCase):
         data["Value"] = "#test#"
         data["Conditions"] = "true"
         data["Menu"] = "default_menu"
-        data["ApplicationId"] = 1
+        data["ApplicationId"] = "1"
         res = self.call("NewPage", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # Test
@@ -427,7 +437,7 @@ class ApiTestCase(unittest.TestCase):
     def test_get_interface_block(self):
         # Add new block
         block = "Block_" + utils.generate_random_name()
-        data = {"Name": block, "Value": "Hello page!", "ApplicationId": 1,
+        data = {"Name": block, "Value": "Hello page!", "ApplicationId": "1",
                 "Conditions": "true"}
         res = self.call("NewBlock", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -504,8 +514,8 @@ class ApiTestCase(unittest.TestCase):
         path = os.path.join(os.getcwd(), "fixtures", "image2.jpg")
         with open(path, 'rb') as f:
             file = f.read()
-        files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
+        files = {'file_1': file}
+        data = {"Name": name, "ApplicationId": "1", "DataMimeType":"image/jpeg", "Data": "file_1"}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         res = self.assertTxInBlock(resp, token)
@@ -530,7 +540,7 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
-        data = {"Value": code, "ApplicationId": 1,
+        data = {"Value": code, "ApplicationId": "1",
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -558,7 +568,7 @@ class ApiTestCase(unittest.TestCase):
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1, "DataMimeType":"image/jpeg"}
+        data = {"Name": name, "ApplicationId": "1", "DataMimeType":"image/jpeg"}
         resp = utils.call_contract_with_files(url, prKey, "UploadBinary", data,
                                               files, token)
         res = self.assertTxInBlock(resp, token)
@@ -583,7 +593,7 @@ class ApiTestCase(unittest.TestCase):
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         # update members table
         code, name = utils.generate_name_and_code("{data{} conditions{} action{ DBUpdate(\"members\", "+founderID+",\"image_id\", "+lastRec+") } }")
-        data = {"Value": code, "ApplicationId": 1,
+        data = {"Value": code, "ApplicationId": "1",
                 "Conditions": "true"}
         res = self.call("NewContract", data)
         self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
@@ -623,10 +633,10 @@ class ApiTestCase(unittest.TestCase):
             else:
                 return False
         name = "Page_" + utils.generate_random_name()
-        data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": 1,
+        data = {"Name": name, "Value": "Div(,Hello page!)", "ApplicationId": "1",
                 "Conditions": "true", "Menu": "default_menu"}
         res = self.call("NewPage", data)
-        self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
+        # self.assertGreater(int(res), 0, "BlockId is not generated: " + res)
         asserts = ["hash"]
         authRes = self.check_post_api("/content/hash/" + name, "", asserts)
         notAuthRes = requests.post(url + "/content/hash/" + name)

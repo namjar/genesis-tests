@@ -25,6 +25,7 @@ def login(url, prKey):
 	head = {'Authorization': fullToken}
 	resp = requests.post(url + '/login', params=data, headers=head)
 	res = resp.json()
+	print(res)
 	result = {}
 	result["uid"] = uid
 	result["timeToken"] = res["refresh"]
@@ -60,7 +61,7 @@ def call_contract(url, prKey, name, data, jvtToken):
 	return result
 
 def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/'
+	urlToCont = url + '/prepare'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
 			   "max_sum":"",
@@ -69,6 +70,7 @@ def prepare_multi_tx(url, prKey, entity, jvtToken, data):
 			   "contracts": data}
 	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
 	result = resp.json()
+	print(result)
 	forsigns = result['forsign']
 	signatures = [sign(prKey, forsign) for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
@@ -76,7 +78,7 @@ def prepare_multi_tx(url, prKey, entity, jvtToken, data):
 def call_multi_contract(url, prKey, name, data, jvtToken):
 	sign = prepare_multi_tx(url, prKey, name, jvtToken, data)
 	dataContract = {"time": sign['time'], "signatures": sign["signatures"]}
-	urlEnd = url + '/contractMultiple/' + sign["reqID"]
+	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data={"data":json.dumps(dataContract)}, headers={"Authorization": jvtToken})
 	result = resp.json()
 	return result
@@ -106,8 +108,8 @@ def txstatus(url, sleepTime, hsh, jvtToken):
 
 
 def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	time.sleep(len(hshs) * sleepTime)
-	urlEnd = url + '/txstatusMultiple/'
+	time.sleep(10)
+	urlEnd = url + '/txstatus'
 	resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
 	return resp.json()["results"]
 
