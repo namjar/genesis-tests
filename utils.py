@@ -37,97 +37,79 @@ def login(url, prKey, role):
 	result["key_id"] = res["key_id"]
 	return result
 
-
-def prepare_tx(url, prKey, entity, jvtToken, data):
-	heads = {'Authorization': jvtToken}
-	resp = requests.post(url + '/prepare/' + entity, data=data, headers=heads)
-	result = resp.json()
-	signature = sign(prKey, result['forsign'])
-	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
-
-
-def prepare_tx_with_files(url, prKey, entity, jvtToken, data, files):
-	heads = {'Authorization': jvtToken}
-	resp = requests.post(url + '/prepare/' + entity,
-						data=data, headers=heads, files=files)
-	result = resp.json()
-	signature = sign(prKey, result['forsign'])
-	return {"time": result['time'], "signature": signature, "reqID": result['request_id']}
-
-def call_contract(url, prKey, name, data, jvtToken):
-	sign = prepare_tx(url, prKey, name, jvtToken, data)
-	dataContract = {"time": sign['time'], "signature": sign["signature"]}
-	urlEnd = url + '/contract/' + sign["reqID"]
-	resp = requests.post(urlEnd, data=dataContract, headers={"Authorization": jvtToken})
-	result = resp.json()
-	return result
-
-def prepare_multi_tx(url, prKey, entity, jvtToken, data):
-	urlToCont = url + '/prepareMultiple/'
+def prepare_tx(url, prKey, jvtToken, data, files):
+	urlToCont = url + '/prepare'
 	heads = {'Authorization': jvtToken}
 	request = {"token_ecosystem": "",
 			   "max_sum":"",
 			   "payover": "",
 			   "signed_by": "",
 			   "contracts": data}
-	resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
+	if(files == ""):
+		resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads)
+	else:
+		heads['Content-Type'] = 'multipart/form-data'
+		print("heads = ", heads)
+		print("request = ", request)
+		print("files = ", files)
+		resp = requests.post(urlToCont, data={"data":json.dumps(request)}, headers=heads,
+							files=files)
+	print(resp)
 	result = resp.json()
+	print(result)
 	forsigns = result['forsign']
 	signatures = [sign(prKey, forsign) for forsign in forsigns]
 	return {"time": result['time'], "signatures": signatures, "reqID": result['request_id']}
 
-def call_multi_contract(url, prKey, name, data, jvtToken):
-	sign = prepare_multi_tx(url, prKey, name, jvtToken, data)
+def call_contract(url, prKey, name, data, jvtToken):
+	fullData = [{"contract": name,
+                 "params": data}]
+	print(fullData)
+	return call_multi_contract(url, prKey, fullData, jvtToken, "")
+
+def call_multi_contract(url, prKey, fullData, jvtToken, files):
+	sign = prepare_tx(url, prKey, jvtToken, fullData, files)
 	dataContract = {"time": sign['time'], "signatures": sign["signatures"]}
-	urlEnd = url + '/contractMultiple/' + sign["reqID"]
+	urlEnd = url + '/contract/' + sign["reqID"]
 	resp = requests.post(urlEnd, data={"data":json.dumps(dataContract)}, headers={"Authorization": jvtToken})
 	result = resp.json()
+	print(result)
 	return result
 
-def call_contract_with_files(url, prKey, name, data, files, jvtToken):
-	sign = prepare_tx_with_files(url, prKey, name, jvtToken, data, files)
-	dataContract = {"time": sign['time'], "signature": sign["signature"]}
-	urlEnd = url + '/contract/' + sign["reqID"]
-	resp = requests.post(urlEnd, data=dataContract,
-						headers={"Authorization": jvtToken})
-	result = resp.json()
-	return result
-
-
-def txstatus(url, sleepTime, hsh, jvtToken):
-	sec = 0
-	urlEnd = url + '/txstatus/' + hsh
-	while sec < sleepTime:
-		time.sleep(1)
-		resp = requests.get(urlEnd, headers={'Authorization': jvtToken})
-		jresp = resp.json()
-		if (len(jresp['blockid']) > 0 and 'errmsg' not in json.dumps(jresp)) or ('errmsg' in json.dumps(jresp)):
-			return resp.json()
-		else:
-			sec = sec + 1
-	return resp.json()	
-
-
-def txstatus_multi(url, sleepTime, hshs, jvtToken):
-	urlEnd = url + '/txstatusMultiple/'
-	allTxInBlocks = False
+def txstatus(url, sleepTime, hshs, jvtToken):
+	urlEnd = url + '/txstatus'
+	allTxProcessed = False
 	sec = 0
 	while sec < sleepTime:
 		time.sleep(1)
 		resp = requests.post(urlEnd, params={"data": json.dumps({"hashes": hshs})}, headers={'Authorization': jvtToken})
-		jresp = resp.json()["results"]
+		print(resp.json())
+		jresp = resp.json()['results']
 		for status in jresp.values():
-			if (len(status['blockid']) > 0 and 'errmsg' not in json.dumps(status)):
-				allTxInBlocks = True
+			print(sec, "---", status)
+			if (len(status['blockid']) > 0 or 'errmsg' in json.dumps(status)):
+				allTxProcessed = True
 			else:
-				allTxInBlocks = False
-		if allTxInBlocks == True:
+				allTxProcessed = False
+		if allTxProcessed == True:
 			return jresp
 		else:
 			sec = sec + 1
 	return jresp
 
-
+def getTxStatus(url, pause, result, token):
+	if "hashes" in result:
+		hashes = result['hashes']
+		status = txstatus(url, pause, hashes, token)[hashes[0]]
+		print("status: ", status)
+		if 'errmsg' not in status and int(status['blockid']) > 0:
+			return {"blockid": int(status['blockid']), "result": status['result'],
+				"error": "0"}
+		else:
+			return {"blockid": 0, "error": status['errmsg']['error']}
+	else:
+		print("No hashes in: ", result)
+		return {"blockid": 0, "error": "0"}            
 
 def generate_random_name():
 	name = []

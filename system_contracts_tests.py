@@ -21,35 +21,12 @@ class SystemContractsTestCase(unittest.TestCase):
         login = self.config["1"]["login"]
         pas = self.config["1"]['pass']
         self.data = utils.login(url, prKey, 0)
-        token = self.data["jwtToken"]
-
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
-        hash = result['hash']
-        status = utils.txstatus(url, pause, hash, jwtToken)
-        if len(status['blockid']) > 0:
-            self.assertNotIn(json.dumps(status), 'errmsg')
-            return {"blockid": int(status["blockid"]), "error": "0"}
-        else:
-            return {"blockid": 0, "error": status["errmsg"]["error"]}
-
+        token = self.data["jwtToken"]            
+        
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
-        resp = self.assertTxInBlock(resp, token)
-        return resp
-
-    def assertMultiTxInBlock(self, result, jwtToken):
-        self.assertIn("hashes", result)
-        hashes = result['hashes']
-        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
-        for status in result.values():
-            self.assertNotIn('errmsg', status)
-            self.assertGreater(int(status["blockid"]), 0,
-                               "BlockID not generated")
-
-    def callMulti(self, name, data):
-        resp = utils.call_multi_contract(url, prKey, name, data, token)
-        resp = self.assertMultiTxInBlock(resp, token)
+        print(resp)
+        resp = utils.getTxStatus(url, pause, resp, token)
         return resp
     
     def waitBlockId(self, old_block_id, limit):
@@ -680,7 +657,7 @@ class SystemContractsTestCase(unittest.TestCase):
         "\"index\": \"1\",  \"conditions\":\"true\"}]"
         condition = "tryam"
         permissions = "{\"insert\": \"" + condition +\
-        "\", \"update\" : \"true\", \"new_column\": \"true\"}"
+        "\", \"\" : \"true\", \"new_column\": \"true\"}"
         data = {"Name": "Tab_" + utils.generate_random_name(),
                 "Columns": columns, "Permissions": permissions,
                 "ApplicationId": 1}
@@ -836,9 +813,9 @@ class SystemContractsTestCase(unittest.TestCase):
                            "BlockId is not generated: " + str(res))
 
     def test_new_lang(self):
-        data = {"AppID": 1, "Name": "Lang_" + utils.generate_random_name(),
+        data = {"AppID": "1", "Name": "Lang_" + utils.generate_random_name(),
                 "Trans": "{\"en\": \"false\", \"ru\" : \"true\"}",
-                "ApplicationId": 1}
+                "ApplicationId": "1"}
         res = self.call("NewLang", data)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1008,9 +985,9 @@ class SystemContractsTestCase(unittest.TestCase):
         with open(path, 'rb') as f:
             file = f.read()
         files = {'Data': file}
-        data = {"Name": name, "ApplicationId": 1}
-        resp = utils.call_contract_with_files(url, prKey, "UploadBinary",
-                                              data, files, token)
+        data = [{"contract": "UploadBinary",
+                 "params": {"File": 'Data', "Name": name, "ApplicationId": 1}}]
+        resp = utils.call_multi_contract(url, prKey, data, token, files)
         res = self.assertTxInBlock(resp, token)
         self.assertGreater(res["blockid"], 0,
                            "BlockId is not generated: " + str(res))
@@ -1233,8 +1210,10 @@ class SystemContractsTestCase(unittest.TestCase):
         with open(path, 'r') as f:
             file = f.read()
         files = {'input_file': file}
-        resp = utils.call_contract_with_files(url, prKey, "ImportUpload", {},
-                                              files, token)
+        data = [{"contract": "ImportUpload",
+                 "params": {"File": 'input_file'}}]
+        resp = utils.call_multi_contract(url, prKey, data,
+                                         token, files)
         resImportUpload = self.assertTxInBlock(resp, token)
         self.assertGreater(resImportUpload["blockid"], 0,
                            "BlockId is not generated: " + str(resImportUpload))
@@ -1246,7 +1225,7 @@ class SystemContractsTestCase(unittest.TestCase):
         contractName = "Import"
         data = [{"contract": contractName,
                  "params": importAppData[i]} for i in range(len(importAppData))]
-        self.callMulti(contractName, data)
+        self.call(contractName, data)
 
 
 if __name__ == '__main__':

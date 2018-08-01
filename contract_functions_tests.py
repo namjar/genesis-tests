@@ -12,7 +12,7 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.config = config.getNodeConfig()
         global url, prKey,token, dbHost, dbName, login, pas
         self.contracts = config.readFixtures("contracts")
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         prKey = self.config["1"]['private_key']
         dbHost = self.config["1"]["dbHost"]
         dbName = self.config["1"]['dbName']
@@ -21,66 +21,44 @@ class ContractFunctionsTestCase(unittest.TestCase):
         self.data = utils.login(url,prKey, 0)
         token = self.data["jwtToken"]
 
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
-        status = utils.txstatus(url,
-                                self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], jwtToken)
-        print(status)
-        self.assertNotIn(json.dumps(status), 'errmsg')
-        self.assertGreater(len(status['blockid']), 0)
-
     def generate_name_and_code(self, sourseCode):
         name = utils.generate_random_name()
         code = "contract " + name + sourseCode
         return code, name
 
     def create_contract(self, code):
-        data = {"Wallet": "", "ApplicationId": 1,
+        data = {"Wallet": "", "ApplicationId": "1",
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
         result = utils.call_contract(url, prKey, "NewContract",
                                      data, token)
-        self.assertTxInBlock(result, token)
-
-    def call_contract(self, name, data):
-        result = utils.call_contract(url, prKey, name,
-                                     data, token)
-        self.assertTxInBlock(result, token)
-
+        status = utils.getTxStatus(url, self.config["1"]["time_wait_tx_in_block"],
+                                   result, token)
+        print(status)
+        self.assertGreater(status['blockid'], 0)
 
     def check_contract(self, sourse, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
-        url = self.config["2"]["url"]
-        prKey = self.config["1"]['private_key']
-        token = self.data["jwtToken"]
-        sleep = self.config["1"]["time_wait_tx_in_block"]
-        res = utils.call_contract(url, prKey, name, {}, token)
-        hash = res["hash"]
-        result = utils.txstatus(url, sleep, hash, token)
-        self.assertIn(checkPoint, result["result"], "error")
+        res = utils.call_contract(url, prKey, name,
+                                  {}, token)
+        print("res", res)
+        status = utils.getTxStatus(url, self.config["1"]["time_wait_tx_in_block"],
+                                   res, token)
+        self.assertIn(checkPoint, status["result"], "error")
 
     def call(self, name, data):
-        url = self.config["2"]["url"]
-        prKey = self.config["1"]['private_key']
-        token = self.data["jwtToken"]
         result = utils.call_contract(url, prKey, name, data, token)
-        status = utils.txstatus(url,
+        status = utils.getTxStatus(url,
                                 self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], token)
+                                result, token)
         return status
       
     def check_contract_with_data(self, sourse, data, checkPoint):
         code, name = self.generate_name_and_code(sourse)
         self.create_contract(code)
-        url = self.config["2"]["url"]
-        prKey = self.config["1"]['private_key']
-        token = self.data["jwtToken"]
-        sleep = self.config["1"]["time_wait_tx_in_block"]
         res = utils.call_contract(url, prKey, name, data, token)
-        hash = res["hash"]
-        result = utils.txstatus(url, sleep, hash, token)
+        result = utils.getTxStatus(url, sleep, res, token)
         print(result)
         self.assertIn(checkPoint, result["result"], "error")
 

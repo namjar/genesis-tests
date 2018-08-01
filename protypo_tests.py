@@ -24,33 +24,24 @@ class PrototipoTestCase(unittest.TestCase):
         password = self.config["2"]["pass"]
         self.maxDiff = None
 
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash",  result)
-        status = utils.txstatus(url,
-                                self.config["1"]["time_wait_tx_in_block"],
-                                result['hash'], jwtToken)
-        self.assertNotIn(json.dumps(status), 'errmsg')
-        self.assertGreater(len(status['blockid']), 0)
-
     def create_contract(self, code):
-        data = {"Wallet": "", "ApplicationId": 1,
+        data = {"Wallet": "", "ApplicationId": "1",
                 "Value": code,
                 "Conditions": "ContractConditions(`MainCondition`)"}
-        result = utils.call_contract(url, prKey, "NewContract",
-                                     data, token)
-        self.assertTxInBlock(result, token)
+        result = self.call_contract("NewContract", data)
 
     def call_contract(self, name, data):
         result = utils.call_contract(url, prKey, name,
                                      data, token)
-        self.assertTxInBlock(result, token)
+        status = utils.getTxStatus(url, pause, result, token)
+        self.assertGreater(status['blockid'], 0)
 
     def check_page(self, sourse):
         name = "Page_" + utils.generate_random_name()
         data = {"Name": name, "Value": sourse, "ApplicationId": 1,
                 "Conditions": "true", "Menu": "default_menu"}
-        resp = utils.call_contract(url, prKey, "NewPage", data, token)
-        self.assertTxInBlock(resp, token)
+        result = self.call_contract("NewPage", data)
+
         cont = funcs.get_content(url, "page", name, "", 1, token)
         return cont
 
@@ -113,22 +104,7 @@ class PrototipoTestCase(unittest.TestCase):
         mustBe = dict(tag=partContent[0]["tag"],
                       popupHeader=partContent[0]["attr"]["popup"]["header"],
                       popupWidth=partContent[0]["attr"]["popup"]["width"],
-                      text=partContent[0]["cив
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-                      ildren"][0]["text"])
+                      text=partContent[0]["children"][0]["text"])
         page = dict(tag=contractContent[0]["tag"],
                     popupHeader=contractContent[0]["attr"]["popup"]["header"],
                     popupWidth=contractContent[0]["attr"]["popup"]["width"],

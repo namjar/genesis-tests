@@ -74,7 +74,7 @@ def updateProfile(name, url, prKey, token):
         exit(1)
         
 def setAplaConsensus(id, url, prKey, token):
-    data = {"member_id": id, "rid": 3}
+    data = {"member_id": id, "rid": "3"}
     call = utils.call_contract(url, prKey, "Roles_Assign",
                                data, token)
     if not isInBlock(call, url, token):
@@ -83,7 +83,7 @@ def setAplaConsensus(id, url, prKey, token):
         
 def createVoiting(tcpAdress, apiAddress, keyId, pubKey, url, prKey, token):
     data = {"TcpAddress": tcpAdress, "ApiAddress": apiAddress,
-            "KeyId": keyId, "PubKey": pubKey, "Duration": 1}
+            "KeyId": keyId, "PubKey": pubKey, "Duration": "1"}
     print(str(data))
     call = utils.call_contract(url, prKey, "sysparams_StartNodeAdd",
                                data, token)
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     impApp("platform_ecosystem", url, prKey1, token1)
     
     voitingInstall(url, prKey1, token1)
-    editAppParam("voting_sysparams_template_id", 2, url, prKey1, token1)
+    editAppParam("voting_sysparams_template_id", "2", url, prKey1, token1)
     node1 = json.dumps({"tcp_address": conf["1"]["tcp_address"],
                       "api_address": conf["1"]["api_address"],
                       "key_id": conf["1"]["keyID"],

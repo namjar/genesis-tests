@@ -12,7 +12,7 @@ class MultiTxApiTestCase(unittest.TestCase):
     def setUp(self):
         global url, token, prKey, pause
         self.config = config.getNodeConfig()
-        url = self.config["2"]["url"]
+        url = self.config["1"]["url"]
         pause = self.config["1"]["time_wait_tx_in_block"]
         prKey = self.config["1"]['private_key']
         self.data = utils.login(url, prKey, 0)
@@ -21,13 +21,14 @@ class MultiTxApiTestCase(unittest.TestCase):
     def assertMultiTxInBlock(self, result, jwtToken):
         self.assertIn("hashes", result)
         hashes = result['hashes']
-        result = utils.txstatus_multi(url, pause, hashes, jwtToken)
+        result = utils.txstatus(url, pause, hashes, jwtToken)
+        print(result)
         for status in result.values():
             self.assertNotIn('errmsg', status)
             self.assertGreater(int(status["blockid"]), 0, "BlockID not generated")
 
     def callMulti(self, name, data):
-        resp = utils.call_multi_contract(url, prKey, name, data, token)
+        resp = utils.call_multi_contract(url, prKey, data, token, "")
         resp = self.assertMultiTxInBlock(resp, token)
         return resp
 

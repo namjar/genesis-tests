@@ -22,27 +22,16 @@ class LimitsTestCase(unittest.TestCase):
         self.data = utils.login(conf["2"]["url"],
                                 conf["1"]['private_key'], 0)
         token = self.data["jwtToken"]        
-
-    def assertTxInBlock(self, result, jwtToken):
-        self.assertIn("hash", result)
-        hash = result['hash']
-        status = utils.txstatus(conf["2"]["url"], pause, hash, token)
-        print("status tx: ", status)
-        if len(status['blockid']) > 0:
-            self.assertNotIn(json.dumps(status), 'errmsg')
-            return status["blockid"]
-        else:
-            return status["errmsg"]["error"]
         
     def call(self, name, data):
         resp = utils.call_contract(conf["2"]["url"], conf["1"]['private_key'],
                                    name, data, token)
-        res = self.assertTxInBlock(resp, token)
+        res = utils.getTxStatus(conf["2"]["url"], pause, resp, token)
         return res
         
     def update_sys_param(self, param, value):
         data = {"Name": param, "Value" : value}
-        res = self.call("UpdateSysParam", data)
+        res = self.call("UpdateSysParam", data)['blockid']
         self.assertGreater(int(res), 0,
                            "Block is not generated for updating sysparam: " +\
                            res)
@@ -58,7 +47,7 @@ class LimitsTestCase(unittest.TestCase):
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-        error = self.call("NewContract", data)
+        error = self.call("NewContract", data)['error']
         self.assertEqual(error, "Max size of tx", "Incorrect error: " + error)
         self.update_sys_param("max_tx_size", str(max_tx_size))
         
@@ -73,7 +62,7 @@ class LimitsTestCase(unittest.TestCase):
         code = "contract " + name + contract["limits"]["code"]
         data = {"Wallet": "", "Value": code, "ApplicationId": 1,
                 "Conditions": "true"}
-        error = self.call("NewContract", data)
+        error = self.call("NewContract", data)['error']
         self.assertEqual(error, "stop generating block", "Incorrect error: " + error)
         self.update_sys_param("max_block_size", str(max_block_size))
       
