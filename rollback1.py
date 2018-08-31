@@ -327,6 +327,7 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
+        self.impApp("basic", url, prKey, token)
         self.addNotification()
         self.addBinary()
         tableName = self.addUserTable()
