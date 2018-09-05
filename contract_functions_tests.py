@@ -449,8 +449,9 @@ class ContractFunctionsTestCase(unittest.TestCase):
     def test_sortedKeys(self):
         contract = self.contracts["sortedKeys"]
         self.check_contract(contract["code"], contract["asert"])
-        
-    def test_getHistoryContract(self):
+
+    # off
+    def getHistoryContract(self):
         # create contract
         replacedString = "old_var"
         code = """
@@ -473,7 +474,8 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getHistory"]
         self.check_contract_with_data(contract["code"], data, replacedString)
 
-    def test_getHistoryPage(self):
+    # off
+    def getHistoryPage(self):
         # create page
         name = utils.generate_random_name()
         page = "Div(Body: Hello)"
@@ -532,7 +534,8 @@ class ContractFunctionsTestCase(unittest.TestCase):
         mustBe = "[@1" + outerName + " CallContract @1" + innerName +"]"
         self.assertEqual(mustBe, res["result"], "test_sys_var_stack is failed!")
 
-    def test_getHistoryRowMenu(self):
+    # off
+    def getHistoryRowMenu(self):
         # create menu
         rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
@@ -556,7 +559,8 @@ class ContractFunctionsTestCase(unittest.TestCase):
         contract = self.contracts["getHistoryRow"]
         self.check_contract_with_data(contract["code"], data, menu)
 
-    def test_getHistoryRowBlock(self):
+    # off
+    def getHistoryRowBlock(self):
         # create block
         rollc_before = utils.getMaxIdFromTable(dbHost, dbName, login, pas, "rollback_tx")
         name = utils.generate_random_name()
