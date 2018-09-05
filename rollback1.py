@@ -48,6 +48,7 @@ class Rollback1TestCase(unittest.TestCase):
                         if int(status["blockid"]) < 1:
                             print("Import is failed")
                             exit(1)
+                    print("App '" + appName + "' successfully installed")
 
     def call(self, name, data):
         resp = utils.call_contract(url, prKey, name, data, token)
@@ -327,6 +328,7 @@ class Rollback1TestCase(unittest.TestCase):
         res = self.call("EditSign", dataEdit)
 
     def test_rollback1(self):
+        print("Start rollback test")
         self.impApp("basic", url, prKey, token)
         self.addNotification()
         self.addBinary()
@@ -378,7 +380,7 @@ class Rollback1TestCase(unittest.TestCase):
         sign = self.new_sign()
         self.edit_sign(sign)
         time.sleep(20)
-
+        print("End of rollback test")
 
 if __name__ == "__main__":
     unittest.main()
